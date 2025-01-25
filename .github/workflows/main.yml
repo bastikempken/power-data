@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: bastikempken/power-data-ui
-          path: power-data
+          path: power-data-
       - uses: actions/checkout@v4
         with:
           repository: bastikempken/power-data-ui

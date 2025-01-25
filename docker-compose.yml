@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    container_name: power-data-db
+    volumes:
+      - power-data:/var/lib/postgresql/data
+    hostname: postgres
+    environment:
+      POSTGRES_DB: powerdata
+      POSTGRES_USER: powerdata
+      POSTGRES_PASSWORD: powerdata
+    ports:
+      - 5432:5432
+volumes:
+  power-data: null

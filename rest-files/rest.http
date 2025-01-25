@@ -1,0 +1,13 @@
+## source
+
+POST {{baseUrl}}/measurements
+content-type: application/json
+
+{
+  "device": "omv-heavy",
+  "ain": "11630%200481724",
+  "energy": 2,
+  "power": 3,
+  "temperature": 4,
+  "voltage": 5
+}
