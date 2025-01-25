@@ -1,0 +1,24 @@
+name: 'Build App'
+
+on:
+    push:
+        branches: ['main']
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                path: power-data
+            - uses: actions/checkout@v4
+              with:
+                repository: bastikempken/power-data-ui
+                path: power-data-ui
+            - run: docker build -t power-data -f power-data/Dockerfile .
+            - run: docker save power-data > /tmp/power-data.tar
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: power-data
+                path: /tmp/power-data.tar
