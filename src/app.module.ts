@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MeasurementModule } from './measurement/measurement.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { MeasurementEntity } from './measurement/measurement.entity';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { HTTPLoggingInterceptor } from './logging-interceptor';
 
 @Module({
   imports: [
@@ -32,7 +32,12 @@ import { MeasurementEntity } from './measurement/measurement.entity';
       },
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: HTTPLoggingInterceptor,
+    },
+  ],
 })
 export class AppModule {}
