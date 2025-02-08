@@ -8,11 +8,13 @@ import { MeasurementEntity } from './measurement/measurement.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { HTTPLoggingInterceptor } from './logging-interceptor';
 import { DeviceModule } from './devices/device.modules';
+import { AvmModule } from './avm/avm.modules';
 
 @Module({
   imports: [
     MeasurementModule,
     DeviceModule,
+    AvmModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '.', 'client'),
     }),
