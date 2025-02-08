@@ -7,10 +7,12 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { MeasurementEntity } from './measurement/measurement.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { HTTPLoggingInterceptor } from './logging-interceptor';
+import { DeviceModule } from './devices/device.modules';
 
 @Module({
   imports: [
     MeasurementModule,
+    DeviceModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '.', 'client'),
     }),
