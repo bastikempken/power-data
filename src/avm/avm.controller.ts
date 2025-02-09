@@ -1,13 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { AvmDto } from './avm.dto';
+import { Controller, Get, Param } from '@nestjs/common';
 import { AvmService } from './avm.service';
+import { LoginService } from './login.service';
 
-@Controller('avm')
+@Controller('avm/:ain')
 export class AvmController {
-  constructor(private readonly deviceService: AvmService) {}
+  constructor(
+    private readonly avmService: AvmService,
+    private readonly loginService: LoginService,
+  ) {}
 
-  @Get()
-  devices(): Promise<AvmDto[]> {
-    return this.deviceService.getDevices();
+  @Get('energy')
+  async getEnergy(@Param('ain') ain: string): Promise<string> {
+    const sid = await this.loginService.getSid();
+    return this.avmService.getEnergy(ain, sid);
   }
 }
