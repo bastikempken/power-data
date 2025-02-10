@@ -3,9 +3,11 @@ import { AvmController } from './avm.controller';
 import { AvmService } from './avm.service';
 import { HttpModule } from '@nestjs/axios';
 import { LoginService } from './login.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MeasurementEntity } from './measurement.entity';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, TypeOrmModule.forFeature([MeasurementEntity])],
   controllers: [AvmController],
   providers: [AvmService, LoginService],
   exports: [],

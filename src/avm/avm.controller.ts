@@ -1,6 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { AvmService } from './avm.service';
 import { LoginService } from './login.service';
+import { MeasurementEntity } from './measurement.entity';
 
 @Controller('avm/:ain')
 export class AvmController {
@@ -9,9 +10,8 @@ export class AvmController {
     private readonly loginService: LoginService,
   ) {}
 
-  @Get('energy')
-  async getEnergy(@Param('ain') ain: string): Promise<string> {
-    const sid = await this.loginService.getSid();
-    return this.avmService.getEnergy(ain, sid);
+  @Get('measurement')
+  async getEnergy(@Param('ain') ain: string): Promise<MeasurementEntity> {
+    return this.avmService.getMeasurement(ain);
   }
 }
