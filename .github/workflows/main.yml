@@ -9,17 +9,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          repository: bastikempken/power-data-ui
-          path: power-data-
-      - uses: actions/checkout@v4
+          version: 10
+      - uses: actions/setup-node@v4
         with:
-          repository: bastikempken/power-data-ui
-          path: power-data-ui
-      - run: docker build -t power-data -f power-data/Dockerfile .
-      - run: docker save power-data > /tmp/power-data.tar
-      - uses: actions/upload-artifact@v4
-        with:
-          name: power-data
-          path: /tmp/power-data.tar
+          node-version: 22.11.0
+      - name: Install dependencies
+        run: pnpm install
+      - name: Lint
+        run: pnpm lint
+      - name: Build
+        run: pnpm build
+
+
