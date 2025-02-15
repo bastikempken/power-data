@@ -5,16 +5,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity({ name: 'measurements' })
-export class MeasurementEntity {
+@Entity({ name: 'data-sets' })
+export class DataSetEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column()
-  device!: string;
-
-  @Column()
-  ain!: string;
+  deviceId!: string;
 
   @Column()
   energy: number;

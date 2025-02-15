@@ -2,11 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, map } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
-import { MeasurementEntity } from './measurement.entity';
+import { DataSetEntity } from '../devices/data-set.entity';
 import { LoginService } from './login.service';
 import { XMLParser } from 'fast-xml-parser';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { DeviceDto, DeviceListDto } from './dtos/avm.dto';
+import { Response } from './dtos/avm-internal.dto';
 
 @Injectable()
 export class AvmService {
@@ -18,76 +20,47 @@ export class AvmService {
     private readonly httpService: HttpService,
     private readonly loginService: LoginService,
     readonly configService: ConfigService,
-    @InjectRepository(MeasurementEntity)
-    private measurementRepository: Repository<MeasurementEntity>,
+    @InjectRepository(DataSetEntity)
+    private measurementRepository: Repository<DataSetEntity>,
   ) {
     this.fb = configService.getOrThrow<string>('FB');
   }
 
-  public async getMeasurement(ain: string): Promise<MeasurementEntity> {
+  async getDeviceList(): Promise<DeviceListDto> {
     const sid = await this.loginService.getSid();
-    const energy = await this.getEnergy(ain, sid);
-    const power = await this.getPower(ain, sid);
-    const temperature = await this.getTemperature(ain, sid);
-    const voltage = await this.getVoltage(ain, sid);
-    const parser = new XMLParser();
-    const entity = new MeasurementEntity();
-    entity.energy = energy;
-    entity.power = power;
-    entity.temperature = temperature;
-
-    return entity;
+    return await this.callDeviceList(sid);
   }
 
-  private async getEnergy(ain: string, sid: string): Promise<number> {
+  async getDevice(ain: string): Promise<DeviceDto | undefined> {
+    const sid = await this.loginService.getSid();
+    const { devicelist } = await this.callDeviceList(sid);
+    return devicelist.find((device) => device.ain === ain);
+  }
+
+  private async callDeviceList(sid: string): Promise<DeviceListDto> {
     const request = this.httpService
       .get<string>(`${this.fb}/${this.endpoint}`, {
         params: {
           sid,
-          ain,
-          switchcmd: 'getswitchenergy',
-        },
-      })
-      .pipe(map((res) => parseInt(res.data)));
-    return firstValueFrom(request);
-  }
-
-  private async getTemperature(ain: string, sid: string): Promise<number> {
-    const request = this.httpService
-      .get<string>(`${this.fb}/${this.endpoint}`, {
-        params: {
-          sid,
-          ain,
-          switchcmd: 'gettemperature',
-        },
-      })
-      .pipe(map((res) => parseInt(res.data)));
-    return firstValueFrom(request);
-  }
-
-  private async getPower(ain: string, sid: string): Promise<number> {
-    const request = this.httpService
-      .get<string>(`${this.fb}/${this.endpoint}`, {
-        params: {
-          sid,
-          ain,
-          switchcmd: 'getswitchpower',
-        },
-      })
-      .pipe(map((res) => parseInt(res.data)));
-    return firstValueFrom(request);
-  }
-
-  private async getVoltage(ain: string, sid: string): Promise<string> {
-    const request = this.httpService
-      .get<string>(`${this.fb}/${this.endpoint}`, {
-        params: {
-          sid,
-          ain,
           switchcmd: 'getdevicelistinfos',
         },
       })
-      .pipe(map((res) => res.data));
+      .pipe(
+        map((res) => {
+          const parser = new XMLParser({
+            ignoreAttributes: false,
+            isArray: (tagName) => tagName === 'device',
+          });
+          const { devicelist } = <Response>parser.parse(res.data);
+          const deviceDtos: DeviceDto[] = devicelist.device.map((d) => ({
+            ...d,
+            ain: d['@_identifier'],
+          }));
+          return {
+            devicelist: [...deviceDtos],
+          };
+        }),
+      );
     return firstValueFrom(request);
   }
 }

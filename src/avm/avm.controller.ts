@@ -1,17 +1,20 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { AvmService } from './avm.service';
-import { LoginService } from './login.service';
-import { MeasurementEntity } from './measurement.entity';
+import { DeviceDto, DeviceListDto } from './dtos/avm.dto';
 
-@Controller('avm/:ain')
+@Controller('homeautoswitch')
 export class AvmController {
-  constructor(
-    private readonly avmService: AvmService,
-    private readonly loginService: LoginService,
-  ) {}
+  constructor(private readonly avmService: AvmService) {}
 
-  @Get('measurement')
-  async getEnergy(@Param('ain') ain: string): Promise<MeasurementEntity> {
-    return this.avmService.getMeasurement(ain);
+  @Get('devicelist/:ain')
+  async device(@Param('ain') ain: string): Promise<DeviceDto> {
+    const device = await this.avmService.getDevice(ain);
+    //TODO 403
+    return device!;
+  }
+
+  @Get('devicelist')
+  async deviceList(): Promise<DeviceListDto> {
+    return this.avmService.getDeviceList();
   }
 }

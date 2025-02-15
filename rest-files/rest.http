@@ -1,13 +1,33 @@
-## source
+## avm
 
-POST {{baseUrl}}/measurements
+### device
+
+GET {{baseUrl}}/homeautoswitch/devicelist/11630%200481724
+
+### devicelist
+
+GET {{baseUrl}}/homeautoswitch/devicelist/
+
+## device
+
+### create device
+
+POST {{baseUrl}}/devices
 content-type: application/json
 
 {
-  "device": "omv-heavy",
-  "ain": "11630%200481724",
-  "energy": 2,
-  "power": 3,
-  "temperature": 4,
-  "voltage": 5
+  "name": "omv-heavy",
+  "ain": "11630%200481724"
 }
+
+### get devices
+
+GET {{baseUrl}}/devices
+
+### store dataset
+
+POST {{baseUrl}}/devices/1/data-sets
+
+### get dataset
+
+GET {{baseUrl}}/devices/1/data-sets
