@@ -48,7 +48,12 @@ export class DeviceService {
     dataSetEntity.power = powermeter.power;
     dataSetEntity.temperature = temperature.celsius;
     dataSetEntity.voltage = powermeter.voltage;
-    return this.dataSetRepository.save(dataSetEntity);
+    // only store data if device is running
+    if (dataSetEntity.power > 0) {
+      return this.dataSetRepository.save(dataSetEntity);
+    } else {
+      return dataSetEntity;
+    }
   }
 
   @Cron(CronExpression.EVERY_30_SECONDS)
