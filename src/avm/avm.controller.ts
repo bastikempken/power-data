@@ -6,6 +6,16 @@ import { DeviceDto, DeviceListDto } from './dtos/avm.dto';
 export class AvmController {
   constructor(private readonly avmService: AvmService) {}
 
+  @Get('setswitchon/:ain/on')
+  async setSwitchOn(@Param('ain') ain: string): Promise<number> {
+    return await this.avmService.setSimpleOnOff(ain, 1);
+  }
+
+  @Get('setswitchon/:ain/off')
+  async setSwitchOff(@Param('ain') ain: string): Promise<number> {
+    return await this.avmService.setSimpleOnOff(ain, 0);
+  }
+
   @Get('devicelist/:ain')
   async device(@Param('ain') ain: string): Promise<DeviceDto> {
     const device = await this.avmService.getDevice(ain);

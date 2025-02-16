@@ -8,6 +8,14 @@ GET {{baseUrl}}/homeautoswitch/devicelist/11630%200481724
 
 GET {{baseUrl}}/homeautoswitch/devicelist/
 
+### set switch on
+
+GET {{baseUrl}}/homeautoswitch/setswitchon/11630%200481724/on
+
+### set switch off
+
+GET {{baseUrl}}/homeautoswitch/setswitchon/11630%200481724/off
+
 ## device
 
 ### create device
@@ -23,6 +31,14 @@ content-type: application/json
 ### get devices
 
 GET {{baseUrl}}/devices
+
+### turn device on
+
+GET {{baseUrl}}/devices/1/on
+
+### turn device off
+
+GET {{baseUrl}}/devices/1/off
 
 ### store dataset
 

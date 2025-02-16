@@ -18,6 +18,16 @@ export class DeviceController {
     return this.deviceService.getDevices(active);
   }
 
+  @Get(':id/on')
+  switchDeviceOn(@Param('id') id: string): Promise<number> {
+    return this.deviceService.switchDeviceOn(id);
+  }
+
+  @Get(':id/off')
+  switchDeviceOff(@Param('id') id: string): Promise<number> {
+    return this.deviceService.switchDeviceOff(id);
+  }
+
   @Post(':id/data-sets')
   soreDataset(@Param('id') id: string): Promise<DataSetEntity> {
     return this.deviceService.storeDataset(id);

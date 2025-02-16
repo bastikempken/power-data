@@ -71,4 +71,20 @@ export class DeviceService {
   getDatasets(deviceId: string) {
     return this.dataSetRepository.findBy({ deviceId });
   }
+
+  async switchDeviceOn(deviceId: string) {
+    const device = await this.deviceRepository.findOneBy({ id: deviceId });
+    if (device === null) {
+      throw new BadRequestException('Device not found');
+    }
+    return this.avmService.setSimpleOnOff(device.ain, 1);
+  }
+
+  async switchDeviceOff(deviceId: string) {
+    const device = await this.deviceRepository.findOneBy({ id: deviceId });
+    if (device === null) {
+      throw new BadRequestException('Device not found');
+    }
+    return this.avmService.setSimpleOnOff(device.ain, 0);
+  }
 }

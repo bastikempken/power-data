@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom, map } from 'rxjs';
+import { catchError, firstValueFrom, map, of } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { DataSetEntity } from '../devices/data-set.entity';
 import { LoginService } from './login.service';
@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DeviceDto, DeviceListDto } from './dtos/avm.dto';
 import { Response } from './dtos/avm-internal.dto';
+import { AxiosError } from 'axios';
 
 @Injectable()
 export class AvmService {
@@ -24,6 +25,29 @@ export class AvmService {
     private measurementRepository: Repository<DataSetEntity>,
   ) {
     this.fb = configService.getOrThrow<string>('FB');
+  }
+
+  async setSimpleOnOff(ain: string, onoff: 1 | 0): Promise<number> {
+    const sid = await this.loginService.getSid();
+    const request = this.httpService
+      .get<string>(`${this.fb}/${this.endpoint}`, {
+        params: {
+          sid,
+          ain,
+          switchcmd: 'setsimpleonoff',
+          onoff,
+        },
+      })
+      .pipe(
+        map((res) => {
+          return parseInt(res.data);
+        }),
+        catchError((err: AxiosError) => {
+          this.logger.error('error on simple on off', err.request);
+          return of(-1);
+        }),
+      );
+    return firstValueFrom(request);
   }
 
   async getDeviceList(): Promise<DeviceListDto> {
